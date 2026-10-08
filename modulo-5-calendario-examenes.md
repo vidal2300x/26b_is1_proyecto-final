@@ -24,6 +24,7 @@
 1. **Jorge Uriel Vidal Morales**
 2. **Melany Joana Toledo Escamilla**
 3. **Alan Daniel Salas Gutierrez**
+4. **Samuel Riveroll Vargas**
 
 ---
 
