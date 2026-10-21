@@ -1,0 +1,56 @@
+# Módulo 8: Asignación de Aulas
+
+---
+
+## Tabla de Contenido
+- [1. Información del Módulo](#1-información-del-módulo)
+- [2. Integrantes del Equipo](#2-integrantes-del-equipo)
+- [3. Resumen](#3-resumen)
+- [4. Glosario y Abreviaturas](#4-glosario-y-abreviaturas)
+- [5. Alcance y Requisitos del Módulo](#5-alcance-y-requisitos-del-módulo)
+  - [5.1. Requisitos Funcionales (RF)](#51-requisitos-funcionales-rf)
+  - [5.2. Requisitos No Funcionales (RNF)](#52-requisitos-no-funcionales-rnf)
+
+---
+
+## 1. Información del Módulo
+- **Sistema:** Sistema de Control Escolar Universitario
+- **Módulo:** Módulo 8 - Gestión y Asignación de Aulas e Infraestructura
+- **Equipo Responsable:** Equipo 8
+
+---
+
+## 2. Integrantes del Equipo
+1. **Jorge Uriel Vidal Morales**
+2. **Melany Joana Toledo Escamilla**
+3. **Alan Daniel Salas Gutierrez**
+4. **Samuel Riveroll Vargas**
+
+---
+
+## 3. Resumen
+El **Módulo de Asignación de Aulas** es fundamental para el control, administración y optimización de los espacios físicos y virtuales de la institución educativa. Su objetivo principal es gestionar la infraestructura escolar (aulas y auditorios), registrar su capacidad y recursos disponibles, y coordinar la asignación de espacios para clases regulares, exámenes y eventos especiales, garantizando que no existan sobrecupos ni empalmes de horarios.
+
+---
+
+## 4. Glosario y Abreviaturas
+| Abreviatura / Término | Definición |
+| :--- | :--- |
+| **AUL-TEO** | Aula Teórica: Espacio físico destinado a clases magistrales o teóricas. |
+| **AUD-CEN** | Auditorio Central: Espacio de alta capacidad para conferencias o evaluaciones masivas. |
+| **CAP-AUL** | Capacidad del Aula: Límite máximo de alumnos permitidos por normativa de espacio/aforo. |
+
+---
+
+## 5. Alcance y Requisitos del Módulo
+
+### 5.1. Requisitos Funcionales (RF)
+1. **RF-01 Registro y Gestión de Espacios:** Permitir dar de alta, modificar y dar de baja aulas y recintos, especificando número, edificio, tipo y capacidad de alumnos (ej. capacidad fija de 20 alumnos).
+2. **RF-02 Control de Recursos e Instalaciones:** Registrar el equipamiento disponible en cada espacio (proyectores, computadoras, conectores).
+3. **RF-03 Detección de Conflictos de Traslape de Espacio:** Validar en tiempo real que ningún aula sea asignado a dos clases, exámenes o eventos en el mismo bloque de horario.
+4. **RF-04 Validación de Aforo y Capacidad:** Verificar que el total de alumnos inscritos en un grupo o examen no supere la capacidad máxima del aula asignada.
+
+### 5.2. Requisitos No Funcionales (RNF)
+1. **RNF-01 Tiempo de Respuesta en Validaciones:** Garantizar que la verificación de disponibilidad e idoneidad del aula se realice en menos de 5 segundos durante el proceso de programación de horarios y exámenes.
+
+---
