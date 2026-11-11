@@ -96,65 +96,104 @@ Admin --> UC8
 ##  Diagramas de Contexto (Nivel 0 y Nivel 1)
 ```plantuml
 
-@startuml Modulo8_Calendario_Examenes_Completo
-title Módulo 8: Calendario de Exámenes (Cumplimiento de Rúbrica)
+@startuml Modulo8_Aulas_Completo
+title Módulo 8: Asignación de Aulas (Nivel 0 y Nivel 1)
 
 skinparam defaultTextAlignment center
 skinparam packageStyle rectangle
 skinparam shadowing false
 
 package "Nivel 0 (Contexto)" {
+    rectangle "Módulo de Alumnos" as modAlumnos0
+    rectangle "Módulo Calendario de Exámenes" as modExamenes0
+    rectangle "Módulo de Inscripciones" as modInscripciones0
     rectangle "Administrador / Coordinador" as admin0
-    rectangle "Profesor / Aplicador" as prof0
-    rectangle "Alumno" as alum0
     
-    storage "Sistema de Información\nde Calendario de Exámenes" as sistema0
+    storage "Sistema de Gestión y\nAsignación de Aulas" as sistema0
     
-    admin0 --> sistema0 : programación de periodos
-    prof0 --> sistema0 : consulta de aplicación
-    alum0 --> sistema0 : consulta personal
+    admin0 --> sistema0 : Gestión de infraestructura y asignaciones
+    modAlumnos0 --> sistema0 : Consulta aula de horario / Valida aforo para cambio de grupo
+    modExamenes0 --> sistema0 : Solicitud de aula para evaluación
+    modInscripciones0 --> sistema0 : Solicitud de aula para clase regular
     
-    sistema0 --> admin0 : alertas de traslape
-    sistema0 --> prof0 : lista de asistencia
-    sistema0 --> alum0 : fecha y aula de examen
+    sistema0 --> modAlumnos0 : Detalle de espacio y confirmación de cupo
+    sistema0 --> modExamenes0 : Confirmación / Rechazo de aula libre
+    sistema0 --> modInscripciones0 : Confirmación / Rechazo de aula libre
 }
 
 package "Nivel 1 (Contenedores / Subsistemas)" {
-    rectangle "Usuarios\n(Admin / Prof / Alumno)" as user1
-    
+    rectangle "Administrador / Coordinador" as admin1
+    rectangle "Profesor / Alumno" as user1
+
+    rectangle "Módulo de Alumnos" as modAlumnos1
+    rectangle "Módulo Calendario de Exámenes" as modExamenes1
+    rectangle "Módulo de Inscripciones" as modInscripciones1
+
     rectangle "Aplicación Web / Móvil\n(Front-End)" as app1
-    
-    storage "API Gateway /\nServicios Back-End" as gateway1
-    
-    storage "1. Programador de E
+
+    package "API Backend (Servicios de Aulas)" {
+        storage "Servicio de Gestión\nde Infraestructura" as infraSvc1
+        storage "Servicio de Asignación\ny Reservas" as reserSvc1
+        storage "Servicio de Consulta\nde Espacios" as consultaSvc1
+        storage "Validador de Disponibilidad\ny Aforo" as validSvc1
+    }
+
+    database "Cache de Horarios" as cache1
+    database "Base de Datos de Infraestructura" as db1
+    queue "Cola de Eventos" as queue1
+
+    storage "Servicio de Notificaciones" as notifSvc1
+
+    ' Conexiones de Actores e Interfaces
+    admin1 --> app1 : HTTP/S
+    user1 --> app1 : HTTP/S
+
+    app1 --> infraSvc1 : HTTP/REST
+    app1 --> reserSvc1 : HTTP/REST
+    app1 --> consultaSvc1 : HTTP/REST
+
+    ' Integración de Módulos Externos hacia el Backend
+    modAlumnos1 --> consultaSvc1 : HTTP/REST (Consulta aula / aforo)
+    modExamenes1 --> reserSvc1 : HTTP/REST (Reserva examen)
+    modInscripciones1 --> reserSvc1 : HTTP/REST (Reserva clase regular)
+
+    ' Lógica interna del Backend y Persistencia
+    reserSvc1 --> validSvc1
+    infraSvc1 --> db1
+    reserSvc1 --> db1
+    consultaSvc1 --> cache1
+    consultaSvc1 --> db1
+
+    ' Procesamiento Asíncrono
+    reserSvc1 --> queue1
+    queue1 --> notifSvc1
+}
+@enduml
 
 ```
-![Diagramas de Contexto (Nivel 0 y Nivel 1) del Módulo 8. Aulas](resources/imgs/m8_CalendarioExs_contexto.png)
+![Diagramas de Contexto (Nivel 0 y Nivel 1) del Módulo 8. Aulas](resources/imgs/m8_Aulas_contexto.png)
 
 ## Descripción
 
-### Diagrama de Nivel 0 (Contexto)
+## Diagrama de Nivel 0 (Contexto)
 
-- **Módulo de Aulas:** Mantiene una comunicación bidireccional solicitando disponibilidad de espacios y devolviendo el catálogo de aulas activas.
-  
-- **Módulo de Inscripciones:** Provee la carga académica de asignaturas y la lista de grupos asociados tanto a alumnos como a docentes.
-  
-- **Servicio de Autenticación:** Transmite la validación de identidad y el rol activo del usuario para determinar los permisos de operación dentro del sistema.
-  
-- **Sistema de Control Escolar (Calendario de Exámenes):** Procesa los datos recibidos para programar las evaluaciones y coordinar los recursos.
-  
-- **Servicio de Notificaciones:** Recibe la emisión de avisos y alertas del calendario para distribuirlos a los usuarios involucrados.
-  
+* *Administrador / Coordinador:* Interactúa con el sistema registrando la infraestructura física, definiendo aforos y gestionando directamente las asignaciones manuales o correcciones.
+* *Módulo de Alumnos:* Envía peticiones de consulta sobre la ubicación física del aula para su horario o verifica la disponibilidad de aforo en caso de solicitudes de cambio de grupo.
+* *Módulo Calendario de Exámenes:* Emite solicitudes de reserva de espacios (aulas o auditorios) para la aplicación de evaluaciones parciales, ordinarias, extraordinarias y de título.
+* *Módulo de Inscripciones:* Solicita la asignación e idoneidad de espacios físicos para el catálogo de clases regulares del periodo académico.
 
-### Diagrama de Nivel 1 (Contenedores / Subsistemas)
+---
 
-- **Actores (Profesor/Aplicador, Administrador/Coordinador, ALUMNOS):** Interfazan con el sistema mediante peticiones seguras (`HTTP/S`) hacia la capa cliente.
- 
-  
-- **Servicios de Administración:** Gestionan la persistencia de configuraciones, modificaciones de periodos y parámetros.
-  
-- **Servicio de Consulta:** Atiende las búsquedas del usuario optimizando la lectura.
-  
-- **Servicio de Programación:** Registra los eventos de examen, coordina la validación de espacios y publica eventos.
-  
-- **Validador de Conflicto:** Proceso automatizado que interactúa con el Módulo de Aulas para asegurar la disponibilidad sin cruce de horarios.
+## Diagrama de Nivel 1 (Contenedores / Subsistemas)
+
+### Capa de Presentación
+* *Front-End:* Interfaz web/móvil para que administradores, docentes y alumnos gestionen y consulten espacios mediante llamadas HTTP/S seguras.
+
+### Servicios Backend
+* *Servicios de Infraestructura (infraSvc1):* Administra el catálogo de recintos, capacidad máxima, edificios e inventarios de equipamiento (tecnología, proyectores).
+* *Servicio de Asignación y Reservas (reserSvc1):* Procesa y coordina las solicitudes de espacio recibidas tanto desde el Front-End como desde los módulos externos (Inscripciones y Exámenes).
+* *Validador de Disponibilidad y Aforo (validSvc1):* Subcomponente especializado que efectúa en tiempo real las comprobaciones algorítmicas de ocupación de horario y validación de aforo antes de confirmar cualquier reserva.
+* *Servicio de Consulta de Espacios (consultaSvc1):* Atiende las búsquedas de horarios y aulas aprovechando la capa de *Caché de Horarios* para asegurar respuestas de alta velocidad.
+
+### Infraestructura de Soporte
+* *Procesamiento Asíncrono y Eventos:* Emplea una *Cola de Eventos* para desacoplar el envío de notificaciones hacia los usuarios u otros subsistemas al confirmarse un cambio o asignación de espacio.
